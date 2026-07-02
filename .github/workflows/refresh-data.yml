@@ -1,0 +1,39 @@
+name: Rafraîchir les données
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"  # tous les lundis à 6h UTC (aligné sur les intervalles hebdo de config.yaml)
+  workflow_dispatch: {}   # permet de le déclencher manuellement depuis l'onglet Actions
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+
+      - name: Rafraîchir DVF, cadastre et loyers
+        run: |
+          python main.py dvf
+          python main.py cadastre
+          python main.py loyers
+
+      - name: Committer la base si elle a changé
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- data/veille.db; then
+            git add data/veille.db
+            git commit -m "Rafraîchissement automatique des données ($(date -u +%Y-%m-%d))"
+            git push
+          else
+            echo "Aucun changement dans la base de données."
+          fi

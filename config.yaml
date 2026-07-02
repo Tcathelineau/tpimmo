@@ -1,0 +1,19 @@
+zone:
+  villes:
+    - "Fermanville"             # 50840
+    - "Vicq-sur-Mer"            # 50330
+    - "Réville"                 # 50760
+    - "Barfleur"                # 50760
+    - "Saint-Vaast-la-Hougue"   # 50550
+  codes_postaux: []  # codes postaux additionnels, en complément des villes ci-dessus (optionnel)
+
+criteres:
+  types_bien: ["Maison"]  # types de bien conservés (DVF ET loyers de référence)
+
+dvf:
+  annees: [2022, 2023, 2024, 2025]
+
+scheduler:
+  dvf_interval_hours: 168
+  cadastre_interval_hours: 168
+  loyers_interval_hours: 168
