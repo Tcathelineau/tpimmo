@@ -52,6 +52,30 @@ Les filtres (codes postaux, **communes**, prix, surface, pièces, type de bien) 
 à tous les onglets. Le filtre communes permet d'isoler précisément les communes étudiées
 quand un code postal rural en couvre plusieurs.
 
+## Déploiement (Streamlit Community Cloud, gratuit)
+
+Le dépôt GitHub associé (`Tcathelineau/tpimmo`) est **privé**. Streamlit Community Cloud
+ne propose plus d'app privée gratuite (ça passe désormais par un essai Snowflake payant) :
+le déploiement gratuit se fait via **"Deploy a public app from GitHub"**, ce qui rend l'URL
+accessible sans authentification native. Un verrou par mot de passe est donc intégré dans
+l'app elle-même :
+
+1. Sur [share.streamlit.io](https://share.streamlit.io), connectez-vous avec GitHub puis
+   **"New app" → "Deploy a public app from GitHub"**, dépôt `Tcathelineau/tpimmo`, branche
+   `master`, fichier `dashboard/app.py`.
+2. Dans les réglages de l'app déployée → **Secrets**, collez le contenu de
+   `.streamlit/secrets.toml.example` en remplaçant la valeur par un vrai mot de passe.
+3. Partagez l'URL et le mot de passe aux personnes concernées.
+
+Sans mot de passe configuré (cas par défaut en local), le dashboard reste en accès libre —
+pratique pour `streamlit run dashboard/app.py` sur votre machine.
+
+Le workflow `.github/workflows/refresh-data.yml` relance `dvf`/`cadastre`/`loyers` chaque
+lundi et repousse `data/veille.db` si elle change, ce qui redéploie automatiquement l'app.
+Il peut aussi être déclenché manuellement depuis l'onglet **Actions** du dépôt. À noter :
+GitHub désactive les workflows planifiés après 60 jours sans activité sur le dépôt (un push
+ou un déclenchement manuel suffit à le réactiver).
+
 ## Structure
 
 ```

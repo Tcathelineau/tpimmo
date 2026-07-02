@@ -515,10 +515,43 @@ def onglet_analyse_investissement(df_dvf: pd.DataFrame, df_loyers: pd.DataFrame)
 
 
 # ----------------------------------------------------------------------------
+# Protection par mot de passe (optionnelle)
+# ----------------------------------------------------------------------------
+
+def verifier_acces() -> bool:
+    """Affiche un écran de connexion si `app_password` est défini dans les secrets
+    Streamlit. Sans mot de passe configuré (usage local par défaut), l'accès est libre.
+    """
+    try:
+        mot_de_passe_attendu = st.secrets.get("app_password")
+    except st.errors.StreamlitSecretNotFoundError:
+        mot_de_passe_attendu = None  # aucun fichier de secrets : usage local, accès libre
+    if not mot_de_passe_attendu:
+        return True
+
+    if st.session_state.get("authentifie"):
+        return True
+
+    st.title("🔒 Accès protégé")
+    st.caption("Ce dashboard contient des données privées : entrez le mot de passe pour continuer.")
+    mot_de_passe = st.text_input("Mot de passe", type="password")
+    if st.button("Se connecter"):
+        if mot_de_passe == mot_de_passe_attendu:
+            st.session_state["authentifie"] = True
+            st.rerun()
+        else:
+            st.error("Mot de passe incorrect.")
+    return False
+
+
+# ----------------------------------------------------------------------------
 # Page principale
 # ----------------------------------------------------------------------------
 
 def main():
+    if not verifier_acces():
+        return
+
     st.title("🏠 Analyse Immobilière")
     st.caption(
         "Ventes réelles (DVF), loyers de référence (ANIL) et cadastre : "
